@@ -1,0 +1,31 @@
+services:
+  nginx:
+    build: .
+    image: ghcr.io/misraaks/nginx-sni-proxy:latest
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+
+  gluetun:
+    image: qmcgaw/gluetun:v3
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - "${HOST_BIND_IP-0.0.0.0}:80:80"
+      - "${HOST_BIND_IP-0.0.0.0}:443:443"
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - WIREGUARD_ENDPOINT_IP=${WIREGUARD_ENDPOINT}
+      - WIREGUARD_ENDPOINT_PORT=${WIREGUARD_ENDPOINT_PORT}
+      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - WIREGUARD_PRESHARED_KEY=${WIREGUARD_PRESHARED_KEY}
+      - WIREGUARD_IMPLEMENTATION=${WIREGUARD_IMPLEMENTATION}
+      - WIREGUARD_MTU=${WIREGUARD_MTU}
+      - WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL=${WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL}
+      - WIREGUARD_ALLOWED_IPS=${WIREGUARD_ALLOWED_IPS}
+      - FIREWALL_OUTBOUND_SUBNETS=${FIREWALL_OUTBOUND_SUBNETS}
+    restart: unless-stopped
