@@ -1,6 +1,5 @@
 services:
   nginx:
-    build: .
     image: ghcr.io/misraaks/nginx-sni-proxy:latest
     restart: unless-stopped
     network_mode: "service:gluetun"
