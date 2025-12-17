@@ -3,6 +3,16 @@ services:
     image: ghcr.io/misraaks/nginx-sni-proxy:latest
     restart: unless-stopped
     network_mode: "service:gluetun"
+    environment:
+      # Defaults to Cloudflare if not set in .env
+      - RESOLVER_IP=${NGINX_RESOLVER:-1.1.1.1 1.0.0.1}
+      - RESOLVER_OPTIONS=${NGINX_RESOLVER_OPTIONS}
+    # FIX: Use single quotes for sh -c, and double quotes for sed to allow variable expansion
+    command: >
+      /bin/sh -c '
+      sed -i "s/resolver 1.1.1.1 1.0.0.1;/resolver $${RESOLVER_IP} $${RESOLVER_OPTIONS};/" /etc/nginx/nginx.conf &&
+      nginx -g "daemon off;"
+      '
 
   gluetun:
     image: qmcgaw/gluetun:v3
