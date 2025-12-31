@@ -21,8 +21,12 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - "${HOST_BIND_IP-0.0.0.0}:80:80"
-      - "${HOST_BIND_IP-0.0.0.0}:443:443"
+      # Bind to IPv4
+      - "${HOST_BIND_IPV4:-0.0.0.0}:80:80"
+      - "${HOST_BIND_IPV4:-0.0.0.0}:443:443"
+      # Bind to IPv6
+      - "[${HOST_BIND_IPV6:-::}]:80:80"
+      - "[${HOST_BIND_IPV6:-::}]:443:443"
     environment:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
